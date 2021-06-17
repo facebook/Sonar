@@ -1,5 +1,6 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../node_modules/react-native-flipper/react_native_flipper'
 source 'https://github.com/CocoaPods/Specs'
 
 platform :ios, '10.0'
@@ -26,6 +27,8 @@ target 'ReactNativeFlipperExample' do
   use_flipper!({ 'Flipper' => flipperkit_version, 'Flipper-Folly' => '2.6.7', 'Flipper-RSocket' => '1.4.3', 'Flipper-DoubleConversion' => '3.1.7', 'Flipper-Glog' => '0.3.9', 'Flipper-PeerTalk' => '0.0.4' })
   post_install do |installer|
     flipper_post_install(installer)
+    react_native_post_install(installer)
+
     # based on https://stackoverflow.com/a/37289688/1983583
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
