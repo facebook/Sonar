@@ -25,7 +25,7 @@ android {
         implementation project(':network-plugin')
         implementation deps.protobuf
         implementation "com.squareup.retrofit2:retrofit:2.9.0"
-        implementation "com.github.hbmartin:protobuf_java_to_protobufjs:0.1.0"
+        implementation "com.github.hbmartin:protobuf_java_to_protobufjs:0.2.0"
         compileOnly deps.jsr305
     }
 }
