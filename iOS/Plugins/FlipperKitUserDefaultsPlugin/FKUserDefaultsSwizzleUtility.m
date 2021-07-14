@@ -17,70 +17,76 @@
 @implementation FKUserDefaultsSwizzleUtility
 
 - (instancetype)init {
-  if (self = [super init]) {
-    _swizzledClasses = [NSMutableSet set];
-    _swizzledBlocks = [NSMutableDictionary dictionary];
+    if (self = [super init]) {
+        _swizzledClasses = [NSMutableSet set];
+        _swizzledBlocks = [NSMutableDictionary dictionary];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
-    _forwardingIMP = class_getMethodImplementation(
-        [NSObject class], @selector(flipperKitThisMethodShouldNotExist));
+        _forwardingIMP = class_getMethodImplementation(
+                                                       [NSObject class], @selector(flipperKitThisMethodShouldNotExist));
 #pragma clang diagnostic pop
-  }
-  return self;
+    }
+    return self;
 }
 
 + (instancetype)sharedInstance {
-  static FKUserDefaultsSwizzleUtility* sharedInstance = nil;
-  static dispatch_once_t onceToken = 0;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [[self alloc] init];
-  });
-  return sharedInstance;
+    static FKUserDefaultsSwizzleUtility* sharedInstance = nil;
+    static dispatch_once_t onceToken = 0;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+    return sharedInstance;
 }
 
 + (void)swizzleSelector:(SEL)selector
                   class:(Class)aClass
                   block:(void (^)(NSInvocation* _Nonnull))block {
-  [[self sharedInstance] swizzleSelector:selector class:aClass block:block];
+    [[self sharedInstance] swizzleSelector:selector class:aClass block:block];
 }
 
 - (void)swizzleSelector:(SEL)selector
                   class:(Class)aClass
                   block:(void (^)(NSInvocation* _Nonnull))blk {
-  if (![self.swizzledClasses containsObject:aClass]) {
     SEL fwdSel = @selector(forwardInvocation:);
-    Method m = class_getInstanceMethod(aClass, fwdSel);
-    __block IMP orig;
-    __weak typeof(self) weakSelf = self;
-    IMP imp = imp_implementationWithBlock(^(id this, NSInvocation* invocation) {
-      NSString* selStr = NSStringFromSelector([invocation selector]);
-      void (^block)(NSInvocation*) = weakSelf.swizzledBlocks[aClass][selStr];
-      if (blk != nil) {
-        NSString* originalStr =
-            [@"comfacebookFlipperKit_" stringByAppendingString:selStr];
-        [invocation setSelector:NSSelectorFromString(originalStr)];
-        if (block != nil) {
-          block(invocation);
-        }
-      } else {
-        ((void (*)(id, SEL, NSInvocation*))orig)(this, fwdSel, invocation);
-      }
-    });
-    orig = method_setImplementation(m, imp);
-    [self.swizzledClasses addObject:aClass];
-  }
-  NSMutableDictionary* classDict = self.swizzledBlocks[aClass];
-  if (classDict == nil) {
-    classDict = [NSMutableDictionary dictionary];
-    self.swizzledBlocks[(id)aClass] = classDict;
-  }
-  classDict[NSStringFromSelector(selector)] = blk;
-  Method m = class_getInstanceMethod(aClass, selector);
-  NSString* newSelStr = [@"comfacebookFlipperKit_"
-      stringByAppendingString:NSStringFromSelector(selector)];
-  SEL newSel = NSSelectorFromString(newSelStr);
-  class_addMethod(
-      aClass, newSel, method_getImplementation(m), method_getTypeEncoding(m));
-  method_setImplementation(m, self.forwardingIMP);
+    fk_addMethod(aClass, fwdSel, class_getInstanceMethod(aClass, fwdSel));
+    if (![self.swizzledClasses containsObject:aClass]) {
+        Method m = class_getInstanceMethod(aClass, fwdSel);
+        __block IMP orig;
+        __weak typeof(self) weakSelf = self;
+        IMP imp = imp_implementationWithBlock(^(id this, NSInvocation* invocation) {
+            NSString* selStr = NSStringFromSelector([invocation selector]);
+            void (^block)(NSInvocation*) = weakSelf.swizzledBlocks[aClass][selStr];
+            if (blk != nil) {
+                NSString* originalStr =
+                [@"comfacebookFlipperKit_" stringByAppendingString:selStr];
+                [invocation setSelector:NSSelectorFromString(originalStr)];
+                if (block != nil) {
+                    block(invocation);
+                }
+            } else {
+                ((void (*)(id, SEL, NSInvocation*))orig)(this, fwdSel, invocation);
+            }
+        });
+        orig = method_setImplementation(m, imp);
+        [self.swizzledClasses addObject:aClass];
+    }
+    NSMutableDictionary* classDict = self.swizzledBlocks[aClass];
+    if (classDict == nil) {
+        classDict = [NSMutableDictionary dictionary];
+        self.swizzledBlocks[(id)aClass] = classDict;
+    }
+    classDict[NSStringFromSelector(selector)] = blk;
+    Method m = class_getInstanceMethod(aClass, selector);
+    NSString* newSelStr = [@"comfacebookFlipperKit_"
+                           stringByAppendingString:NSStringFromSelector(selector)];
+    SEL newSel = NSSelectorFromString(newSelStr);
+    class_addMethod(
+                    aClass, newSel, method_getImplementation(m), method_getTypeEncoding(m));
+    method_setImplementation(m, self.forwardingIMP);
 }
+
+static inline BOOL fk_addMethod(Class theClass, SEL selector, Method method) {
+    return class_addMethod(theClass, selector,  method_getImplementation(method),  method_getTypeEncoding(method));
+}
+
 @end
