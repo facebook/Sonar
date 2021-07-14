@@ -7,6 +7,28 @@
 
 // android/build.gradle
 
+buildscript {
+    // The Android Gradle plugin is only required when opening the android folder stand-alone.
+    // This avoids unnecessary downloads and potential conflicts when the library is included as a
+    // module dependency in an application project.
+    // ref: https://docs.gradle.org/current/userguide/tutorial_using_tasks.html#sec:build_script_external_dependencies
+    if (project == rootProject) {
+        repositories {
+            google()
+            jcenter()
+        }
+        dependencies {
+            classpath 'com.android.tools.build:gradle:4.2.1'
+        }
+    }
+}
+
+plugins {
+    id 'maven-publish'
+}
+
+apply plugin: 'com.android.library'
+
 // based on:
 //
 // * https://github.com/facebook/react-native/blob/0.60-stable/template/android/build.gradle
@@ -25,28 +47,6 @@ def DEFAULT_TARGET_SDK_VERSION = 28
 def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
-
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
-
-buildscript {
-    // The Android Gradle plugin is only required when opening the android folder stand-alone.
-    // This avoids unnecessary downloads and potential conflicts when the library is included as a
-    // module dependency in an application project.
-    // ref: https://docs.gradle.org/current/userguide/tutorial_using_tasks.html#sec:build_script_external_dependencies
-    if (project == rootProject) {
-        repositories {
-            google()
-            jcenter()
-        }
-        dependencies {
-            classpath 'com.android.tools.build:gradle:3.4.1'
-        }
-    }
-}
-
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
 
 android {
     compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
@@ -86,30 +86,38 @@ dependencies {
     }
 }
 
-def configureReactNativePom(def pom) {
-    def packageJson = new groovy.json.JsonSlurper().parseText(file('../package.json').text)
+def packageJson = new groovy.json.JsonSlurper().parseText(file('../package.json').text)
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = packageJson.title
+                artifactId = packageJson.name
+                version = packageJson.version
+                group = "com.facebook.flipper.reactnative"
+                description = packageJson.description
+                url = packageJson.repository.baseUrl
 
-    pom.project {
-        name packageJson.title
-        artifactId packageJson.name
-        version = packageJson.version
-        group = "com.facebook.flipper.reactnative"
-        description packageJson.description
-        url packageJson.repository.baseUrl
+                licenses {
+                    license {
+                        name = packageJson.license
+                        url = packageJson.repository.baseUrl + '/blob/master/' + packageJson.licenseFilename
+                        distribution = 'repo'
+                    }
+                }
 
-        licenses {
-            license {
-                name packageJson.license
-                url packageJson.repository.baseUrl + '/blob/master/' + packageJson.licenseFilename
-                distribution 'repo'
+                developers {
+                    developer {
+                        id = packageJson.author.username
+                        name = packageJson.author.name
+                    }
+                }
             }
         }
-
-        developers {
-            developer {
-                id packageJson.author.username
-                name packageJson.author.name
-            }
+    }
+    repositories {
+        maven {
+            url = "file://${projectDir}/../android/maven"
         }
     }
 }
@@ -147,14 +155,5 @@ afterEvaluate { project ->
     artifacts {
         archives androidSourcesJar
         archives androidJavadocJar
-    }
-
-    task installArchives(type: Upload) {
-        configuration = configurations.archives
-        repositories.mavenDeployer {
-            // Deploy to react-native-event-bridge/maven, ready to publish to npm
-            repository url: "file://${projectDir}/../android/maven"
-            configureReactNativePom pom
-        }
     }
 }
