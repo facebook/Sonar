@@ -5,7 +5,7 @@ source 'https://github.com/CocoaPods/Specs'
 platform :ios, '10.0'
 
 # used for automatic bumping
-flipperkit_version = '0.96.0'
+flipperkit_version = '0.96.1'
 
 target 'ReactNativeFlipperExample' do
   config = use_native_modules!
