@@ -101,7 +101,7 @@ ext.deps = [
         leakcanary         : 'com.squareup.leakcanary:leakcanary-android:1.6.3',
         leakcanary2        : 'com.squareup.leakcanary:leakcanary-android:2.6',
         protobuf           : 'com.google.protobuf:protobuf-java:3.17.3',
-        testCore           : 'androidx.test:core:1.3.0',
+        testCore           : 'androidx.test:core:1.4.0',
         testRules          : 'androidx.test:rules:1.3.0',
         // Plugin dependencies
         frescoFlipper      : 'com.facebook.fresco:flipper:2.5.0',
