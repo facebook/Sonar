@@ -62,7 +62,7 @@ ext.deps = [
         supportRecyclerView: "androidx.recyclerview:recyclerview:$ANDROIDX_VERSION",
         supportConstraintLayout: "androidx.constraintlayout:constraintlayout:2.0.4",
         supportSqlite      : "androidx.sqlite:sqlite-framework:2.1.0",
-        supportEspresso    : 'androidx.test.espresso:espresso-core:3.3.0',
+        supportEspresso    : 'androidx.test.espresso:espresso-core:3.4.0',
         supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.3.0',
         supportTestRunner  : 'androidx.test:runner:1.3.0',
         // Arch
