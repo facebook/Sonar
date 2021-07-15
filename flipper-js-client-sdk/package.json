@@ -28,7 +28,7 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.28.0",
-    "@typescript-eslint/parser": "^4.28.1",
+    "@typescript-eslint/parser": "^4.28.2",
     "ansi-to-html": "^0.6.15",
     "babel-eslint": "^10.0.1",
     "eslint": "^7.29.0",
