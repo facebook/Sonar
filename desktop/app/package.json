@@ -66,7 +66,7 @@
     "redux": "^4.1.0",
     "redux-persist": "^6.0.0",
     "reselect": "^4.0.0",
-    "rsocket-core": "^0.0.19",
+    "rsocket-core": "^0.0.25",
     "rsocket-flowable": "^0.0.25",
     "rsocket-tcp-server": "^0.0.25",
     "rsocket-types": "^0.0.25",
