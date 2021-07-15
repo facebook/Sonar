@@ -36,7 +36,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-babel": "^5.3.0",
-    "eslint-plugin-flowtype": "^5.7.2",
+    "eslint-plugin-flowtype": "^5.8.0",
     "eslint-plugin-header": "^3.0.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jsx-a11y": "^6.4.1",
