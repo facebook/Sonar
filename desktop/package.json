@@ -91,7 +91,7 @@
     "@types/glob": "^7.1.1",
     "@types/invariant": "^2.2.31",
     "@types/jest": "^26.0.23",
-    "@types/lodash": "^4.14.170",
+    "@types/lodash": "^4.14.171",
     "@types/lodash.debounce": "^4.0.6",
     "@types/mkdirp": "^1.0.0",
     "@types/mock-fs": "^4.13.0",
