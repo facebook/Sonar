@@ -3,7 +3,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-flipperkit_version = '0.96.0'
+flipperkit_version = '0.98.0'
 Pod::Spec.new do |spec|
   spec.name = 'Flipper'
   spec.version = flipperkit_version
